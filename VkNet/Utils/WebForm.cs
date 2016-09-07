@@ -179,18 +179,18 @@
 			return inputs;
 		}
 
-		/// <summary>
-		/// Получить из HTML элемента.
-		/// </summary>
-		/// <returns>HTML элемент</returns>
-		/// <exception cref="VkApiException">Элемент не найден на форме.</exception>
-		private HtmlNode GetFormNode()
+        /// <summary>
+        /// Получить из HTML элемента.
+        /// </summary>
+        /// <returns>HTML элемент</returns>
+        /// <exception cref="FormNotFoundException">Элемент не найден на форме.</exception>
+        private HtmlNode GetFormNode()
 		{
 			HtmlNode.ElementsFlags.Remove("form");
 			var form = _html.DocumentNode.SelectSingleNode("//form");
 			if (form == null)
 			{
-				throw new VkApiException("Form element not found.");
+				throw new FormNotFoundException("Form element not found.", _html);
 			}
 
 			return form;

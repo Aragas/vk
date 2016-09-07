@@ -83,6 +83,7 @@
     <Compile Include="Enums\WallContentAccess.cs" />
     <Compile Include="Exception\NeedValidationException.cs" />
     <Compile Include="Exception\OutOfLimitsException.cs" />
+    <Compile Include="Exception\FormNotFoundException.cs" />
     <Compile Include="Model\AccountChangePasswordResult.cs" />
     <Compile Include="Model\CategoryGroup.cs" />
     <Compile Include="Model\DocumentType.cs" />
