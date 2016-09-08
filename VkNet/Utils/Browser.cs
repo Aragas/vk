@@ -120,6 +120,9 @@
             var authorizeUrl = CreateAuthorizeUrlFor(appId, settings, Display.Wap);
             var authorizeUrlResult = WebCall.MakeCall(authorizeUrl, host, port, proxyLogin, proxyPassword);
 
+            if(authorizeUrlResult.ResponseUrl.ToString().StartsWith("https://oauth.vk.com/blank.html#access_token="))
+                return EndAuthorize(authorizeUrlResult, host, port, proxyLogin, proxyPassword);
+
             // Заполнить логин и пароль
             var loginForm = WebForm.From(authorizeUrlResult).WithField("email").FilledWith(email).And().WithField("pass").FilledWith(password);
             if (captchaSid.HasValue)
@@ -133,14 +136,18 @@
                 loginFormPostResult = WebCall.Post(codeForm, host, port);
             }
 
-            var authorization = VkAuthorization.From(loginFormPostResult.ResponseUrl);
+            return EndAuthorize(loginFormPostResult, host, port, proxyLogin, proxyPassword);
+        }
+        private VkAuthorization EndAuthorize(WebCallResult result, string host = null, int? port = null, string proxyLogin = null, string proxyPassword = null)
+        {
+            var authorization = VkAuthorization.From(result.ResponseUrl);
             if (authorization.CaptchaId.HasValue)
                 throw new CaptchaNeededException(authorization.CaptchaId.Value, "http://api.vk.com/captcha.php?sid=" + authorization.CaptchaId.Value);
             if (!authorization.IsAuthorizationRequired)
                 return authorization;
 
             // Отправить данные
-            var authorizationForm = WebForm.From(loginFormPostResult);
+            var authorizationForm = WebForm.From(result);
             var authorizationFormPostResult = WebCall.Post(authorizationForm, host, port, proxyLogin, proxyPassword);
 
             return VkAuthorization.From(authorizationFormPostResult.ResponseUrl);
